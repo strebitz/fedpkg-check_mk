@@ -30,6 +30,7 @@ Version:   1.1.12p7
 Release:   %release_func 1
 License:   GPL
 Group:     System/Monitoring
+Requires:  nagios, pnp4nagios
 URL:       http://mathias-kettner.de/check_mk
 Source:    check_mk-%{version}.tar.gz
 AutoReq:   off
@@ -195,68 +196,3 @@ rm -rf $RPM_BUILD_ROOT
 %files web
 /usr/share/check_mk/web
 %config(noreplace) /etc/httpd/conf.d/*
-
-%pre
-# Make sure user 'nagios' exists
-RUNUSER=nagios
-if ! id $RUNUSER > /dev/null 2>&1
-then
-    useradd -r -c 'Nagios' -d /var/lib/nagios nagios
-    echo "Created user nagios"
-fi
-
-%define reload_xinetd if [ -x /etc/init.d/xinetd ] ; then if pgrep -x xinetd >/dev/null ; then echo "Reloading xinetd..." ; /etc/init.d/xinetd reload ; else echo "Starting xinetd..." ; /etc/init.d/xinetd start ; fi ; fi
-
-%define activate_xinetd if which chkconfig >/dev/null 2>&1 ; then echo "Activating startscript of xinetd" ; chkconfig xinetd on ; fi
-
-%pre agent
-if [ ! -x /etc/init.d/xinetd ] ; then
-    echo
-    echo "---------------------------------------------"
-    echo "WARNING"
-    echo
-    echo "This package needs xinetd to be installed. "
-    echo "Currently you do not have installed xinetd. "
-    echo "Please install and start xinetd or install "
-    echo "and setup another inetd manually."
-    echo ""
-    echo "It's also possible to monitor via SSH without "
-    echo "an inetd."
-    echo "---------------------------------------------"
-    echo
-fi
-
-%post agent
-%activate_xinetd
-%reload_xinetd
-
-%postun agent
-%reload_xinetd
-
-# Sorry. I need to copy&paste all scripts from the normal agent to 
-# the caching agent. This might better be done with RPM macros. But
-# that are very ugly if you want to do multi line shell scripts...
-%pre caching-agent
-if [ ! -x /etc/init.d/xinetd ] ; then
-    echo
-    echo "---------------------------------------------"
-    echo "WARNING"
-    echo
-    echo "This package needs xinetd to be installed. "
-    echo "Currently you do not have installed xinetd. "
-    echo "Please install and start xinetd or install "
-    echo "and setup another inetd manually."
-    echo ""
-    echo "It's also possible to monitor via SSH without "
-    echo "an inetd."
-    echo "---------------------------------------------"
-    echo
-fi
-
-%post caching-agent
-%activate_xinetd
-%reload_xinetd
-
-%postun caching-agent
-%reload_xinetd
-
