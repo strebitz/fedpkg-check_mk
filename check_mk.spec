@@ -22,10 +22,12 @@
 # to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
 # Boston, MA 02110-1301 USA.
 
+%{!?release_func:%global release_func() %1%{?dist}}
+
 Summary:   Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:      check_mk
-Version:   1.1.12p6
-Release:   1
+Version:   1.1.12p7
+Release:   %release_func 1
 License:   GPL
 Group:     System/Monitoring
 URL:       http://mathias-kettner.de/check_mk
