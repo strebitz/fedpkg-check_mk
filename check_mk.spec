@@ -27,10 +27,10 @@
 Summary:   Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:      check_mk
 Version:   1.1.12p7
-Release:   2 %{dist}
+Release:   3 %{dist}
 License:   GPL
 Group:     System/Monitoring
-Requires:  nagios, pnp4nagios
+Requires:  nagios, nagios-plugins, pnp4nagios
 URL:       http://mathias-kettner.de/check_mk
 Source:    http://mathias-kettner.de/download/check_mk-%{version}.tar.gz
 AutoReq:   off
@@ -91,7 +91,7 @@ AutoProv:  off
 %description agent-oracle
 The ORACLE plugin for the check_mk agent allows you to monitor
 several aspects of ORACLE databases. You need to adapt the
-script /etc/check_mk/sqlplus.sh to your needs.
+script %{_sysconfdir}/check_mk/sqlplus.sh to your needs.
 
 %package web
 Group:     System/Monitoring
@@ -109,90 +109,122 @@ search for services and apply Nagios commands to the search results.
 %install
 R=$RPM_BUILD_ROOT
 rm -rf $R
-DESTDIR=$R ./setup.sh --yes
-rm -vf $R/etc/check_mk/*.mk-*
 
-# Move check_mk apache config to the correct place
-mv $R/etc/apache2 $R/etc/httpd
+export bindir="%{_bindir}"
+export confdir="%{_sysconfdir}/check_mk"
+export checksdir="%{_datarootdir}/check_mk/checks"
+export modulesdir="%{_datarootdir}/check_mk/modules"
+export web_dir="%{_datarootdir}check_mk/web"
+export localedir="%{_datarootdir}/check_mk/locale"
+export docdir="%{_datarootdir}/doc/check_mk"
+export checkmandir="%{_datarootdir}/doc/check_mk/checks"
+export vardir="%{_sharedstatedir}/check_mk"
+export agentsdir="%{_datarootdir}/check_mk/agents"
+export agentslibdir="%{_libdir}/check_mk_agent"
+export agentsconfdir="%{_sysconfdir}/check_mk"
+export nagiosuser="nagios"
+export wwwuser="apache"
+export wwwgroup="nagios"
+export nagios_binary="%{_sbindir}/nagios"
+export nagios_config_file="%{_sysconfdir}/nagios/nagios.cfg"
+export nagconfdir="%{_sysconfdir}/nagios/objects"
+export nagios_startscript="%{_sysconfdir}/init.d/nagios"
+export nagpipe="%{_localstatedir}/spool/nagios/cmd/nagios.cmd"
+export check_result_path="/usr/local/nagios%{_localstatedir}/spool/checkresults"
+export nagios_status_file="%{_localstatedir}/log/nagios/status.dat"
+export check_icmp_path="%{_libdir}/nagios/plugins/check_icmp"
+export url_prefix="/"
+export apache_config_dir="%{_sysconfdir}/httpd/conf.d"
+export htpasswd_file="%{_sysconfdir}/nagios/htpasswd.users"
+export nagios_auth_name="Nagios Access"
+export pnptemplates='%{_datarootdir}/check_mk/pnp-templates'
+export pnprraconf='%{_datarootdir}/check_mk/pnp-rraconf'
+export enable_livestatus='yes'
+export libdir='%{_libdir}/check_mk'
+export livesock='%{_localstatedir}/spool/nagios/socket/live'
+export livebackendsdir='%{_datarootdir}/check_mk/livestatus'
+
+DESTDIR=$R ./setup.sh --yes
+rm -vf $R%{_sysconfdir}/check_mk/*.mk-*
 
 # install agent
-mkdir -p $R/etc/xinetd.d
-mkdir -p $R/usr/share/doc/check_mk_agent
-install -m 644 COPYING ChangeLog AUTHORS $R/usr/share/doc/check_mk_agent
-install -m 644 $R/usr/share/check_mk/agents/xinetd.conf $R/etc/xinetd.d/check_mk
-install -m 644 $R/usr/share/check_mk/agents/xinetd_caching.conf $R/etc/xinetd.d/check_mk_caching
-mkdir -p $R/usr/bin
-install -m 755 $R/usr/share/check_mk/agents/check_mk_agent.linux $R/usr/bin/check_mk_agent
-install -m 755 $R/usr/share/check_mk/agents/check_mk_caching_agent.linux $R/usr/bin/check_mk_caching_agent
-install -m 755 $R/usr/share/check_mk/agents/waitmax $R/usr/bin
-mkdir -p $R/usr/lib/check_mk_agent/plugins
-mkdir -p $R/usr/lib/check_mk_agent/local
+mkdir -p $R%{_sysconfdir}/xinetd.d
+mkdir -p $R%{_datarootdir}/doc/check_mk_agent
+install -m 644 COPYING ChangeLog AUTHORS $R%{_datarootdir}/doc/check_mk_agent
+install -m 644 $R%{_datarootdir}/check_mk/agents/xinetd.conf $R%{_sysconfdir}/xinetd.d/check_mk
+install -m 644 $R%{_datarootdir}/check_mk/agents/xinetd_caching.conf $R%{_sysconfdir}/xinetd.d/check_mk_caching
+mkdir -p $R%{_bindir}
+install -m 755 $R%{_datarootdir}/check_mk/agents/check_mk_agent.linux $R%{_bindir}/check_mk_agent
+install -m 755 $R%{_datarootdir}/check_mk/agents/check_mk_caching_agent.linux $R%{_bindir}/check_mk_caching_agent
+install -m 755 $R%{_datarootdir}/check_mk/agents/waitmax $R%{_bindir}
+mkdir -p $R%{_libdir}/check_mk_agent/plugins
+mkdir -p $R%{_libdir}/check_mk_agent/local
 
 # logwatch and oracle extension
-install -m 755 $R/usr/share/check_mk/agents/plugins/mk_* $R/usr/lib/check_mk_agent/plugins
-install -m 755 $R/usr/share/check_mk/agents/logwatch.cfg $R/etc/check_mk
-install -m 644 $R/usr/share/check_mk/agents/sqlplus.sh   $R/etc/check_mk
+install -m 755 $R%{_datarootdir}/check_mk/agents/plugins/mk_* $R%{_libdir}/check_mk_agent/plugins
+install -m 755 $R%{_datarootdir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
+install -m 644 $R%{_datarootdir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%config(noreplace) /etc/check_mk/main.mk
-%config(noreplace) /etc/check_mk/multisite.mk
-/etc/check_mk/conf.d/README
-%config(noreplace) /etc/nagios/objects/*
-/usr/bin/check_mk
-/usr/bin/cmk
-/usr/bin/mkp
-%dir /usr/share/check_mk
-/usr/share/check_mk/agents
-/usr/share/check_mk/checks
-/usr/share/check_mk/modules
-/usr/share/check_mk/pnp-templates/*
-/usr/share/check_mk/pnp-rraconf
-/usr/share/doc/check_mk
-%dir /var/lib/check_mk
-%dir %attr(-,nagios,root) /var/lib/check_mk/counters
-%dir %attr(-,nagios,root) /var/lib/check_mk/cache
-%dir %attr(-,nagios,root) /var/lib/check_mk/logwatch
-%dir %attr(-,apache,apache) /var/lib/check_mk/web
-%dir /var/lib/check_mk/autochecks
-%dir /var/lib/check_mk/precompiled
-%dir /var/lib/check_mk/packages
-/var/lib/check_mk/packages/check_mk
+%config(noreplace) %{_sysconfdir}/check_mk/main.mk
+%config(noreplace) %{_sysconfdir}/check_mk/multisite.mk
+%{_sysconfdir}/check_mk/conf.d/README
+%config(noreplace) %{_sysconfdir}/nagios/objects/*
+%{_bindir}/check_mk
+%{_bindir}/cmk
+%{_bindir}/mkp
+%dir %{_datarootdir}/check_mk
+%{_datarootdir}/check_mk/agents
+%{_datarootdir}/check_mk/checks
+%{_datarootdir}/check_mk/modules
+%{_datarootdir}/check_mk/pnp-templates/*
+%{_datarootdir}/check_mk/pnp-rraconf
+%{_datarootdir}/doc/check_mk
+%dir %{_sharedstatedir}/check_mk
+%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/counters
+%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/cache
+%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/logwatch
+%dir %attr(-,apache,apache) %{_sharedstatedir}/check_mk/web
+%dir %{_sharedstatedir}/check_mk/autochecks
+%dir %{_sharedstatedir}/check_mk/precompiled
+%dir %{_sharedstatedir}/check_mk/packages
+%{_sharedstatedir}/check_mk/packages/check_mk
 
 # Spaeter Subpaket draus machen
-/usr/bin/unixcat
-/usr/lib/check_mk/livestatus.o
+%{_bindir}/unixcat
+%{_libdir}/check_mk/livestatus.o
 
 
 %files agent
-%config(noreplace) /etc/xinetd.d/check_mk
-/usr/bin/check_mk_agent
-/usr/bin/waitmax
-/usr/share/doc/check_mk_agent
-%dir /usr/lib/check_mk_agent/local
-%dir /usr/lib/check_mk_agent/plugins
+%config(noreplace) %{_sysconfdir}/xinetd.d/check_mk
+%{_bindir}/check_mk_agent
+%{_bindir}/waitmax
+%{_datarootdir}/doc/check_mk_agent
+%dir %{_libdir}/check_mk_agent/local
+%dir %{_libdir}/check_mk_agent/plugins
 
 %files caching-agent
-%config(noreplace) /etc/xinetd.d/check_mk_caching
-/usr/bin/check_mk_agent
-/usr/bin/check_mk_caching_agent
-/usr/bin/waitmax
-/usr/share/doc/check_mk_agent
-%dir /usr/lib/check_mk_agent/local
-%dir /usr/lib/check_mk_agent/plugins
-%dir /etc/check_mk
+%config(noreplace) %{_sysconfdir}/xinetd.d/check_mk_caching
+%{_bindir}/check_mk_agent
+%{_bindir}/check_mk_caching_agent
+%{_bindir}/waitmax
+%{_datarootdir}/doc/check_mk_agent
+%dir %{_libdir}/check_mk_agent/local
+%dir %{_libdir}/check_mk_agent/plugins
+%dir %{_sysconfdir}/check_mk
 
 %files agent-logwatch
-/usr/lib/check_mk_agent/plugins/mk_logwatch
-%config(noreplace) /etc/check_mk/logwatch.cfg
+%{_libdir}/check_mk_agent/plugins/mk_logwatch
+%config(noreplace) %{_sysconfdir}/check_mk/logwatch.cfg
 
 %files agent-oracle
-/usr/lib/check_mk_agent/plugins/mk_oracle
-%config(noreplace) /etc/check_mk/sqlplus.sh
+%{_libdir}/check_mk_agent/plugins/mk_oracle
+%config(noreplace) %{_sysconfdir}/check_mk/sqlplus.sh
 
 %files web
-/usr/share/check_mk/web
-%config(noreplace) /etc/httpd/conf.d/*
+%{_datarootdir}/check_mk/web
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/*
