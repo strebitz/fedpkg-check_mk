@@ -30,7 +30,7 @@ Version:   1.1.12p7
 Release:   3%{dist}
 License:   GPL
 Group:     System/Monitoring
-Requires:  nagios, nagios-plugins, pnp4nagios
+Requires:  nagios, nagios-plugins-icmp, pnp4nagios
 URL:       http://mathias-kettner.de/check_mk
 Source:    http://mathias-kettner.de/download/check_mk-%{version}.tar.gz
 AutoReq:   off
@@ -114,7 +114,7 @@ export bindir="%{_bindir}"
 export confdir="%{_sysconfdir}/check_mk"
 export checksdir="%{_datarootdir}/check_mk/checks"
 export modulesdir="%{_datarootdir}/check_mk/modules"
-export web_dir="%{_datarootdir}check_mk/web"
+export web_dir="%{_datarootdir}/check_mk/web"
 export localedir="%{_datarootdir}/check_mk/locale"
 export docdir="%{_datarootdir}/doc/check_mk"
 export checkmandir="%{_datarootdir}/doc/check_mk/checks"
