@@ -27,7 +27,7 @@
 Summary:   Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:      check_mk
 Version:   1.1.12p7
-Release:   3%{dist}
+Release:   4%{dist}
 License:   GPL
 Group:     Applications/System
 Requires:  nagios, nagios-plugins-icmp, pnp4nagios
@@ -35,7 +35,7 @@ URL:       http://mathias-kettner.de/check_mk
 Source:    http://mathias-kettner.de/download/check_mk-%{version}.tar.gz
 AutoReq:   off
 AutoProv:  off
-BuildArch: noarch
+ExclusiveArch: i386, x86_64
 
 
 %description
@@ -49,6 +49,7 @@ Requires:  xinetd
 Summary: Linux-Agent for check_mk
 AutoReq:   off
 AutoProv:  off
+BuildArch: noarch
 Conflicts: check_mk-caching-agent
 %description agent
 This package contains the agent for check_mk. Install this on
@@ -61,6 +62,7 @@ Requires:  xinetd
 Summary: Caching Linux-Agent for check_mk
 AutoReq:   off
 AutoProv:  off
+BuildArch: noarch
 Conflicts: check_mk-agent
 %description caching-agent
 This package contains the agent for check_mk with an xinetd
@@ -75,6 +77,7 @@ Requires:  check_mk-agent, python
 Summary: Logwatch-Plugin for check_mk agent
 AutoReq:   off
 AutoProv:  off
+BuildArch: noarch
 %description agent-logwatch
 The logwatch plugin for the check_mk agent allows you to monitor
 logfiles on Linux and UNIX. In one or more configuration files you
@@ -88,6 +91,7 @@ Requires:  check_mk-agent
 Summary: ORACLE-Plugin for check_mk agent
 AutoReq:   off
 AutoProv:  off
+BuildArch: noarch
 %description agent-oracle
 The ORACLE plugin for the check_mk agent allows you to monitor
 several aspects of ORACLE databases. You need to adapt the
@@ -99,6 +103,7 @@ Requires:  python
 Summary: Check_mk web pages
 AutoReq:   off
 AutoProv:  off
+BuildArch: noarch
 %description web
 This package contains the Check_mk webpages. They allow you to
 search for services and apply Nagios commands to the search results.
@@ -120,17 +125,17 @@ export docdir="%{_datadir}/doc/check_mk"
 export checkmandir="%{_datadir}/doc/check_mk/checks"
 export vardir="%{_sharedstatedir}/check_mk"
 export agentsdir="%{_datadir}/check_mk/agents"
-export agentslibdir="%{_libdir}/check_mk_agent"
+export agentslibdir="%{_datadir}/check_mk_agent"
 export agentsconfdir="%{_sysconfdir}/check_mk"
 export nagiosuser="nagios"
 export wwwuser="apache"
 export wwwgroup="nagios"
 export nagios_binary="%{_sbindir}/nagios"
 export nagios_config_file="%{_sysconfdir}/nagios/nagios.cfg"
-export nagconfdir="%{_sysconfdir}/nagios/objects"
+export nagconfdir="%{_sysconfdir}/nagios/conf.d"
 export nagios_startscript="%{_sysconfdir}/init.d/nagios"
 export nagpipe="%{_localstatedir}/spool/nagios/cmd/nagios.cmd"
-export check_result_path="/usr/local/nagios%{_localstatedir}/spool/checkresults"
+export check_result_path="%{_localstatedir}/spool/checkresults"
 export nagios_status_file="%{_localstatedir}/log/nagios/status.dat"
 export check_icmp_path="%{_libdir}/nagios/plugins/check_icmp"
 export url_prefix="/"
@@ -157,11 +162,11 @@ mkdir -p $R%{_bindir}
 install -m 755 $R%{_datadir}/check_mk/agents/check_mk_agent.linux $R%{_bindir}/check_mk_agent
 install -m 755 $R%{_datadir}/check_mk/agents/check_mk_caching_agent.linux $R%{_bindir}/check_mk_caching_agent
 install -m 755 $R%{_datadir}/check_mk/agents/waitmax $R%{_bindir}
-mkdir -p $R%{_libdir}/check_mk_agent/plugins
-mkdir -p $R%{_libdir}/check_mk_agent/local
+mkdir -p $R%{_datadir}/check_mk_agent/plugins
+mkdir -p $R%{_datadir}/check_mk_agent/local
 
 # logwatch and oracle extension
-install -m 755 $R%{_datadir}/check_mk/agents/plugins/mk_* $R%{_libdir}/check_mk_agent/plugins
+install -m 755 $R%{_datadir}/check_mk/agents/plugins/mk_* $R%{_datadir}/check_mk_agent/plugins
 install -m 755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
 install -m 644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
@@ -173,7 +178,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/check_mk/main.mk
 %config(noreplace) %{_sysconfdir}/check_mk/multisite.mk
 %{_sysconfdir}/check_mk/conf.d/README
-%config(noreplace) %{_sysconfdir}/nagios/objects/*
+%config(noreplace) %{_sysconfdir}/nagios/conf.d/*
 %{_bindir}/check_mk
 %{_bindir}/cmk
 %{_bindir}/mkp
@@ -204,8 +209,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/check_mk_agent
 %{_bindir}/waitmax
 %{_datadir}/doc/check_mk_agent
-%dir %{_libdir}/check_mk_agent/local
-%dir %{_libdir}/check_mk_agent/plugins
+%dir %{_datadir}/check_mk_agent/local
+%dir %{_datadir}/check_mk_agent/plugins
 
 %files caching-agent
 %config(noreplace) %{_sysconfdir}/xinetd.d/check_mk_caching
@@ -213,16 +218,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/check_mk_caching_agent
 %{_bindir}/waitmax
 %{_datadir}/doc/check_mk_agent
-%dir %{_libdir}/check_mk_agent/local
-%dir %{_libdir}/check_mk_agent/plugins
+%dir %{_datadir}/check_mk_agent/local
+%dir %{_datadir}/check_mk_agent/plugins
 %dir %{_sysconfdir}/check_mk
 
 %files agent-logwatch
-%{_libdir}/check_mk_agent/plugins/mk_logwatch
+%{_datadir}/check_mk_agent/plugins/mk_logwatch
 %config(noreplace) %{_sysconfdir}/check_mk/logwatch.cfg
 
 %files agent-oracle
-%{_libdir}/check_mk_agent/plugins/mk_oracle
+%{_datadir}/check_mk_agent/plugins/mk_oracle
 %config(noreplace) %{_sysconfdir}/check_mk/sqlplus.sh
 
 %files web
