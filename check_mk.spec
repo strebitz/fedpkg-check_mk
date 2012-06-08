@@ -24,18 +24,20 @@
 
 %{!?release_func:%global release_func() %1%{?dist}}
 
-Summary:   Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
-Name:      check_mk
-Version:   1.1.12p7
-Release:   4%{dist}
-License:   GPL
-Group:     Applications/System
-Requires:  nagios, nagios-plugins-icmp, pnp4nagios
-URL:       http://mathias-kettner.de/check_mk
-Source:    http://mathias-kettner.de/download/check_mk-%{version}.tar.gz
-AutoReq:   off
-AutoProv:  off
-ExclusiveArch: i386, x86_64
+Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
+Name:           check_mk
+Version:        1.1.12p7
+Release:        5%{dist}
+License:        GPL
+Group:          Applications/System
+Requires:       nagios, nagios-plugins-icmp, pnp4nagios
+URL:            http://mathias-kettner.de/check_mk
+Source:         http://archive.mathias-kettner.de/check_mk/check_mk-%{version}.tar.gz
+Source1:        check_mk.sudo
+Source2:        mk-livestatus.cfg
+AutoReq:        off
+AutoProv:       off
+ExclusiveArch:  i386, x86_64
 
 
 %description
@@ -111,6 +113,9 @@ search for services and apply Nagios commands to the search results.
 %prep
 %setup -q
 
+# fix the path to livestatus.o in mk-livestatus.cfg
+sed -i -e 's:$libdir:\%{_libdir}:' %{SOURCE2} 
+
 %install
 R=$RPM_BUILD_ROOT
 rm -rf $R
@@ -170,6 +175,13 @@ install -m 755 $R%{_datadir}/check_mk/agents/plugins/mk_* $R%{_datadir}/check_mk
 install -m 755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
 install -m 644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
+# install mk-livestatus.cfg for nagios
+install -m 644 %{SOURCE2} $R%{_sysconfdir}/nagios/conf.d
+
+# install check_mk sudoers file required for WATO
+mkdir -p $R%{_sysconfdir}/sudoers.d
+install -m 600 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -179,6 +191,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/check_mk/multisite.mk
 %{_sysconfdir}/check_mk/conf.d/README
 %config(noreplace) %{_sysconfdir}/nagios/conf.d/*
+%config(noreplace) %{_sysconfdir}/sudoers.d/check_mk
 %{_bindir}/check_mk
 %{_bindir}/cmk
 %{_bindir}/mkp
