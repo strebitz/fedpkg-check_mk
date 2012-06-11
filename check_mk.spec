@@ -160,27 +160,27 @@ rm -vf $R%{_sysconfdir}/check_mk/*.mk-*
 # install agent
 mkdir -p $R%{_sysconfdir}/xinetd.d
 mkdir -p $R%{_datadir}/doc/check_mk_agent
-install -m 644 COPYING ChangeLog AUTHORS $R%{_datadir}/doc/check_mk_agent
-install -m 644 $R%{_datadir}/check_mk/agents/xinetd.conf $R%{_sysconfdir}/xinetd.d/check_mk
-install -m 644 $R%{_datadir}/check_mk/agents/xinetd_caching.conf $R%{_sysconfdir}/xinetd.d/check_mk_caching
+install -m 0644 COPYING ChangeLog AUTHORS $R%{_datadir}/doc/check_mk_agent
+install -m 0644 $R%{_datadir}/check_mk/agents/xinetd.conf $R%{_sysconfdir}/xinetd.d/check_mk
+install -m 0644 $R%{_datadir}/check_mk/agents/xinetd_caching.conf $R%{_sysconfdir}/xinetd.d/check_mk_caching
 mkdir -p $R%{_bindir}
-install -m 755 $R%{_datadir}/check_mk/agents/check_mk_agent.linux $R%{_bindir}/check_mk_agent
-install -m 755 $R%{_datadir}/check_mk/agents/check_mk_caching_agent.linux $R%{_bindir}/check_mk_caching_agent
-install -m 755 $R%{_datadir}/check_mk/agents/waitmax $R%{_bindir}
+install -m 0755 $R%{_datadir}/check_mk/agents/check_mk_agent.linux $R%{_bindir}/check_mk_agent
+install -m 0755 $R%{_datadir}/check_mk/agents/check_mk_caching_agent.linux $R%{_bindir}/check_mk_caching_agent
+install -m 0755 $R%{_datadir}/check_mk/agents/waitmax $R%{_bindir}
 mkdir -p $R%{_datadir}/check_mk_agent/plugins
 mkdir -p $R%{_datadir}/check_mk_agent/local
 
 # logwatch and oracle extension
-install -m 755 $R%{_datadir}/check_mk/agents/plugins/mk_* $R%{_datadir}/check_mk_agent/plugins
-install -m 755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
-install -m 644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_* $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
+install -m 0644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
 # install mk-livestatus.cfg for nagios
-install -m 644 %{SOURCE2} $R%{_sysconfdir}/nagios/conf.d
+install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios/conf.d
 
 # install check_mk sudoers file required for WATO
 mkdir -p $R%{_sysconfdir}/sudoers.d
-install -m 600 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
+install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 
 %clean
 rm -rf $RPM_BUILD_ROOT
