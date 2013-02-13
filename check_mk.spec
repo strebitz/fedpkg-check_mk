@@ -26,8 +26,8 @@
 
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
-Version:        1.1.12p7
-Release:        6%{dist}
+Version:        1.2.0p3
+Release:        1%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -122,6 +122,7 @@ rm -rf $R
 
 export bindir="%{_bindir}"
 export confdir="%{_sysconfdir}/check_mk"
+export sharedir="%{_datadir}/check_mk"
 export checksdir="%{_datadir}/check_mk/checks"
 export modulesdir="%{_datadir}/check_mk/modules"
 export web_dir="%{_datadir}/check_mk/web"
@@ -171,7 +172,12 @@ mkdir -p $R%{_datadir}/check_mk_agent/plugins
 mkdir -p $R%{_datadir}/check_mk_agent/local
 
 # logwatch and oracle extension
-install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_* $R%{_datadir}/check_mk_agent/plugins
+mkdir -p $R%{_libdir}/check_mk_agent/plugins
+mkdir -p $R%{_libdir}/check_mk_agent/local
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_logwatch $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_oracle $R%{_datadir}/check_mk_agent/plugins
+ln -s /usr/share/check_mk_agent/plugins/mk_logwatch $R%{_libdir}/check_mk_agent/plugins
+ln -s /usr/share/check_mk_agent/plugins/mk_oracle $R%{_libdir}/check_mk_agent/plugins
 install -m 0755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
 install -m 0644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
@@ -200,7 +206,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/check_mk/checks
 %{_datadir}/check_mk/modules
 %{_datadir}/check_mk/pnp-templates/*
-%{_datadir}/check_mk/pnp-rraconf
+%{_datadir}/check_mk/check_mk_templates.cfg
 %{_datadir}/doc/check_mk
 %dir %{_sharedstatedir}/check_mk
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/counters
@@ -215,6 +221,7 @@ rm -rf $RPM_BUILD_ROOT
 # Spaeter Subpaket draus machen
 %{_bindir}/unixcat
 %{_libdir}/check_mk/livestatus.o
+%{_libdir}/check_mk/livecheck
 
 
 %files agent
@@ -236,10 +243,12 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/check_mk
 
 %files agent-logwatch
+%{_libdir}/check_mk_agent/plugins/mk_logwatch
 %{_datadir}/check_mk_agent/plugins/mk_logwatch
 %config(noreplace) %{_sysconfdir}/check_mk/logwatch.cfg
 
 %files agent-oracle
+%{_libdir}/check_mk_agent/plugins/mk_oracle
 %{_datadir}/check_mk_agent/plugins/mk_oracle
 %config(noreplace) %{_sysconfdir}/check_mk/sqlplus.sh
 
