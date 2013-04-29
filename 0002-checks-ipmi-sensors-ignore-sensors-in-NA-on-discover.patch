@@ -1,0 +1,58 @@
+>From 800d77552f3633d5212bf1b13095f73c4d2a6523 Mon Sep 17 00:00:00 2001
+From: Bernhard Schmidt <berni@birkenwald.de>
+Date: Tue, 27 Mar 2012 15:35:06 +0200
+Subject: [PATCH 2/2] checks/ipmi-sensors: ignore sensors in [NA] on discovery
+
+Dell PowerEdge R610 on OpenSuSE 11.3 reports several sensors in state
+'[NA]' (might be an alias for '[Unknown]'). Exclude them from discovery
+
+<<<ipmi_sensors>>>
+1 Temperature_Temp NA_(NA/90.00) [NA]
+2 Temperature_Temp NA_(NA/90.00) [NA]
+3 Temperature_Temp NA_(NA/NA) [NA]
+4 Temperature_Ambient_Temp NA_(NA/NA) [NA]
+5 Temperature_Temp NA_(NA/NA) [NA]
+6 Temperature_Ambient_Temp NA_(NA/NA) [NA]
+7 Temperature_Ambient_Temp 25.00_C_(3.00/47.00) [OK]
+8 Temperature_Planar_Temp NA_(3.00/97.00) [NA]
+12 Temperature_IOH_THERMTRIP [NA]
+65 Temperature_CPU_Temp_Interf [NA]
+112 Temperature_Temp NA_(NA/NA) [NA]
+113 Temperature_Temp NA_(3.00/47.00) [NA]
+114 Temperature_Temp NA_(3.00/47.00) [NA]
+57 Power_Supply_Status [Presence_detected]
+58 Power_Supply_Status [Presence_detected][Power_Supply_input_lost_(AC/DC)]
+63 Power_Supply_PS_Redundancy [Redundancy_Lost]
+38 Fan_FAN_MOD_1A_RPM 4800.00_RPM_(1920.00/NA) [OK]
+39 Fan_FAN_MOD_2A_RPM 4800.00_RPM_(1920.00/NA) [OK]
+40 Fan_FAN_MOD_3A_RPM 4800.00_RPM_(1920.00/NA) [OK]
+41 Fan_FAN_MOD_4A_RPM 4800.00_RPM_(1920.00/NA) [OK]
+42 Fan_FAN_MOD_5A_RPM 4800.00_RPM_(1920.00/NA) [OK]
+43 Fan_FAN_MOD_6A_RPM 5040.00_RPM_(1920.00/NA) [OK]
+44 Fan_FAN_MOD_1B_RPM 3840.00_RPM_(1920.00/NA) [OK]
+45 Fan_FAN_MOD_2B_RPM 3720.00_RPM_(1920.00/NA) [OK]
+46 Fan_FAN_MOD_3B_RPM 3840.00_RPM_(1920.00/NA) [OK]
+47 Fan_FAN_MOD_4B_RPM 3720.00_RPM_(1920.00/NA) [OK]
+48 Fan_FAN_MOD_5B_RPM 3720.00_RPM_(1920.00/NA) [OK]
+49 Fan_FAN_MOD_6B_RPM 3480.00_RPM_(1920.00/NA) [OK]
+64 Fan_Fan_Redundancy [Fully_Redundant]
+---
+ checks/ipmi_sensors |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/checks/ipmi_sensors b/checks/ipmi_sensors
+index 2e154ef..f905268 100644
+--- a/checks/ipmi_sensors
++++ b/checks/ipmi_sensors
+@@ -60,7 +60,7 @@
+ # 3680 Fan_FAN_PSU2 0.00_RPM_(2760.00/NA) [OK]
+ 
+ def inventory_freeipmi(info):
+-    return [ (line[1], "", None) for line in info if line[-1] != '[Unknown]' ]
++    return [ (line[1], "", None) for line in info if line[-1] != '[Unknown]' and line[-1] != '[NA]' and line[-1] != '[transition_to_Running]' ]
+ 
+ def check_freeipmi(item, _no_params, info):
+     for line in info:
+-- 
+1.7.2.5
+

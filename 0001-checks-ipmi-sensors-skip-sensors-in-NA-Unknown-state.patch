@@ -1,0 +1,35 @@
+>From d22b42e3daea7c533f829972a697c599b11a22ea Mon Sep 17 00:00:00 2001
+From: Bernhard Schmidt <berni@birkenwald.de>
+Date: Tue, 27 Mar 2012 16:10:13 +0200
+Subject: [PATCH] checks/ipmi-sensors: skip sensors in NA/Unknown state when checking
+
+Skip sensors in 'NA' or 'Unknown' state when checking, we should not
+have inventorized it in the first place. If we have it's either broken
+or we have two sensors with the same name, like in the following
+example
+
+6 Temperature_Ambient_Temp NA_(NA/NA) [NA]
+7 Temperature_Ambient_Temp 25.00_C_(3.00/47.00) [OK]
+---
+ checks/ipmi_sensors |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+diff --git a/checks/ipmi_sensors b/checks/ipmi_sensors
+index f905268..432e229 100644
+--- a/checks/ipmi_sensors
++++ b/checks/ipmi_sensors
+@@ -69,6 +69,11 @@ def check_freeipmi(item, _no_params, info):
+             perfdata = []
+             infotext = "Sensor status is " + status
+ 
++            # Skip sensors in NA or Unknown state, we might have another one
++            # with the same name
++            if status == "NA" or status == "Unknown":
++                continue
++
+             # some sensors have a value and levels (e.g. temperature)
+             if len(line) == 4:
+                 current, levels = line[2].split('(')
+-- 
+1.7.2.5
+

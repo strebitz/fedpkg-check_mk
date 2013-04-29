@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.0p4
-Release:        1%{dist}
+Release:        2%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -35,6 +35,9 @@ URL:            http://mathias-kettner.de/check_mk
 Source:         http://archive.mathias-kettner.de/check_mk/check_mk-%{version}.tar.gz
 Source1:        check_mk.sudo
 Source2:        mk-livestatus.cfg
+Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
+Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
+Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
 AutoReq:        off
 AutoProv:       off
 ExclusiveArch:  i386, x86_64
@@ -101,7 +104,7 @@ script %{_sysconfdir}/check_mk/sqlplus.sh to your needs.
 
 %package web
 Group:     Applications/System
-Requires:  python
+Requires:  python, mod_python
 Summary: Check_mk web pages
 AutoReq:   off
 AutoProv:  off
@@ -141,12 +144,12 @@ export nagios_config_file="%{_sysconfdir}/nagios/nagios.cfg"
 export nagconfdir="%{_sysconfdir}/nagios/conf.d"
 export nagios_startscript="%{_sysconfdir}/init.d/nagios"
 export nagpipe="%{_localstatedir}/spool/nagios/cmd/nagios.cmd"
-export check_result_path="%{_localstatedir}/spool/checkresults"
+export check_result_path="%{_localstatedir}/log/nagios/spool/checkresults"
 export nagios_status_file="%{_localstatedir}/log/nagios/status.dat"
 export check_icmp_path="%{_libdir}/nagios/plugins/check_icmp"
 export url_prefix="/"
 export apache_config_dir="%{_sysconfdir}/httpd/conf.d"
-export htpasswd_file="%{_sysconfdir}/nagios/htpasswd.users"
+export htpasswd_file="%{_sysconfdir}/nagios/passwd"
 export nagios_auth_name="Nagios Access"
 export pnptemplates='%{_datadir}/check_mk/pnp-templates'
 export pnprraconf='%{_datadir}/check_mk/pnp-rraconf'
@@ -157,6 +160,16 @@ export livebackendsdir='%{_datadir}/check_mk/livestatus'
 
 DESTDIR=$R ./setup.sh --yes
 rm -vf $R%{_sysconfdir}/check_mk/*.mk-*
+
+# patches must be apllied here - source tarball contains sub tarballs which are extraced during setup
+# patch check_mk_agent.linux: ipmi sensors: also check Power_Supply
+patch -p3 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %PATCH0
+
+# checks: ipmi sensors: skip sensors in NA Unknown state
+patch -p3 $R%{_datadir}/check_mk/checks/ipmi_sensors < %PATCH1
+
+# checks: ipmi sensors: ignore sensors in NA or in transition_to_Running on discover
+patch -p3 $R%{_datadir}/check_mk/checks/ipmi_sensors < %PATCH2
 
 # install agent
 mkdir -p $R%{_sysconfdir}/xinetd.d
@@ -184,7 +197,8 @@ install -m 0644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/chec
 # install mk-livestatus.cfg for nagios
 install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios/conf.d
 
-# install check_mk sudoers file required for WATO
+# install check_mk sudoers file and config required for WATO
+mkdir -p $R%{_sysconfdir}/check_mk/conf.d/wato
 mkdir -p $R%{_sysconfdir}/sudoers.d
 install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 
@@ -212,7 +226,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/counters
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/cache
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/logwatch
-%dir %attr(-,apache,apache) %{_sharedstatedir}/check_mk/web
 %dir %{_sharedstatedir}/check_mk/autochecks
 %dir %{_sharedstatedir}/check_mk/precompiled
 %dir %{_sharedstatedir}/check_mk/packages
@@ -253,5 +266,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/check_mk/sqlplus.sh
 
 %files web
+%dir %attr(-,apache,apache) %{_sysconfdir}/check_mk/conf.d/wato
 %{_datadir}/check_mk/web
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
+%dir %attr(-,apache,apache) %{_sharedstatedir}/check_mk/web

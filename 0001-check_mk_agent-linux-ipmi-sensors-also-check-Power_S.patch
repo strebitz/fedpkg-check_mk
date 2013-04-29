@@ -1,0 +1,27 @@
+>From 7340b3f9330b9d0166dc11a3107a6ce9c25b6993 Mon Sep 17 00:00:00 2001
+From: Bernhard Schmidt <berni@birkenwald.de>
+Date: Tue, 27 Mar 2012 15:32:27 +0200
+Subject: [PATCH 1/2] check_mk_agent-linux/ipmi-sensors: also check Power_Supply sensor class
+
+Deal with systems (i.e. Dell PowerEdge R610) that do not have usable
+information in the Power_Unit class, but in Power_Supply
+---
+ agents/check_mk_agent.linux |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/agents/check_mk_agent.linux b/agents/check_mk_agent.linux
+index 2b1272d..3161507 100755
+--- a/agents/check_mk_agent.linux
++++ b/agents/check_mk_agent.linux
+@@ -254,7 +254,7 @@ then
+     (
+         flock -n 200 --wait 60 
+         # At least with ipmi-sensoirs 0.7.16 this group is Power_Unit instead of "Power Unit"
+-        for class in Temperature Power_Unit Fan
++        for class in Temperature Power_Supply Power_Unit Fan
+         do
+             $WAITMAX ipmi-sensors $IPMI_FORMAT --sdr-cache-directory /var/cache -g "$class" | sed -e 's/ /_/g' -e 's/:_\?/ /g' -e 's@ \([^(]*\)_(\([^)]*\))@ \2_\1@'
+             # In case of a timeout immediately leave loop. 
+-- 
+1.7.2.5
+
