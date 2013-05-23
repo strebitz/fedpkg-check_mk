@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.0p4
-Release:        2%{dist}
+Release:        3%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -119,6 +119,9 @@ search for services and apply Nagios commands to the search results.
 # fix the path to livestatus.o in mk-livestatus.cfg
 sed -i -e 's:$libdir:\%{_libdir}:' %{SOURCE2} 
 
+# fix sudo command for check_mk automation
+sed -i 's/$(id -un)/root/' ./setup.sh
+
 %install
 R=$RPM_BUILD_ROOT
 rm -rf $R
@@ -199,6 +202,7 @@ install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios/conf.d
 
 # install check_mk sudoers file and config required for WATO
 mkdir -p $R%{_sysconfdir}/check_mk/conf.d/wato
+mkdir -p $R%{_sysconfdir}/check_mk/multisite.d
 mkdir -p $R%{_sysconfdir}/sudoers.d
 install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 
@@ -267,6 +271,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files web
 %dir %attr(-,apache,apache) %{_sysconfdir}/check_mk/conf.d/wato
+%dir %attr(-,apache,apache) %{_sysconfdir}/check_mk/multisite.d
 %{_datadir}/check_mk/web
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
 %dir %attr(-,apache,apache) %{_sharedstatedir}/check_mk/web
