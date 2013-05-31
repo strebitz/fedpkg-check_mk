@@ -222,6 +222,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/check_mk/main.mk
 %config(noreplace) %{_sysconfdir}/check_mk/multisite.mk
 %{_sysconfdir}/check_mk/conf.d/README
+%config(noreplace) %{_sysconfdir}/nagios/*
 %config(noreplace) %{_sysconfdir}/nagios/conf.d/*
 %config(noreplace) %{_sysconfdir}/sudoers.d/check_mk
 %{_bindir}/check_mk
