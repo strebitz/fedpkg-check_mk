@@ -204,10 +204,12 @@ install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios
 mkdir -p $R%{_sysconfdir}/check_mk/conf.d/wato
 mkdir -p $R%{_sysconfdir}/check_mk/multisite.d/wato
 mkdir -p $R%{_sysconfdir}/sudoers.d
+mkdir -p $R%{_sharedstatedir}/check_mk/wato
 install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 
 # create directory used for the mk-livestatus broker module socket
 mkdir -p $R%{_localstatedir}/spool/nagios/socket
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -278,4 +280,5 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d/wato
 %{_datadir}/check_mk/web
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
+%dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/wato
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/web
