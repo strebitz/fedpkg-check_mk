@@ -206,6 +206,9 @@ mkdir -p $R%{_sysconfdir}/check_mk/multisite.d/wato
 mkdir -p $R%{_sysconfdir}/sudoers.d
 install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 
+# create directory used for the mk-livestatus broker module socket
+mkdir -p $R%{_localstatedir}/spool/nagios/socket
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -239,6 +242,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/unixcat
 %{_libdir}/check_mk/livestatus.o
 %{_libdir}/check_mk/livecheck
+%dir %attr(-,nagios,nagios) %{_localstatedir}/spool/nagios/socket
 
 
 %files agent
