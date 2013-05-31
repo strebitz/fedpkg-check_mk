@@ -34,7 +34,7 @@ Requires:       nagios, nagios-plugins-icmp, pnp4nagios
 URL:            http://mathias-kettner.de/check_mk
 Source:         http://archive.mathias-kettner.de/check_mk/check_mk-%{version}.tar.gz
 Source1:        check_mk.sudo
-Source2:        mk-livestatus.cfg
+Source2:        mk-livestatus.cfg.sample
 Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
 Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
@@ -116,7 +116,7 @@ search for services and apply Nagios commands to the search results.
 %prep
 %setup -q
 
-# fix the path to livestatus.o in mk-livestatus.cfg
+# fix the path to livestatus.o in mk-livestatus.cfg.sample
 sed -i -e 's:$libdir:\%{_libdir}:' %{SOURCE2} 
 
 # fix sudo command for check_mk automation
@@ -197,8 +197,8 @@ ln -s /usr/share/check_mk_agent/plugins/mk_oracle $R%{_libdir}/check_mk_agent/pl
 install -m 0755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
 install -m 0644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
-# install mk-livestatus.cfg for nagios
-install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios/conf.d
+# install mk-livestatus.cfg.sample for nagios
+install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios
 
 # install check_mk sudoers file and config required for WATO
 mkdir -p $R%{_sysconfdir}/check_mk/conf.d/wato
