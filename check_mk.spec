@@ -35,6 +35,7 @@ URL:            http://mathias-kettner.de/check_mk
 Source:         http://archive.mathias-kettner.de/check_mk/check_mk-%{version}.tar.gz
 Source1:        check_mk.sudo
 Source2:        mk-livestatus.cfg.sample
+Source3:        pnp4nagios_perfdata.cfg
 Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
 Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
@@ -210,6 +211,8 @@ install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 # create directory used for the mk-livestatus broker module socket
 mkdir -p $R%{_localstatedir}/spool/nagios/socket
 
+# install pnp4nagios_perfdata configuration
+install -m 0644 %{SOURCE3} $R%{_sysconfdir}/nagios/conf.d/pnp4nagios_perfdata.cfg
 
 %clean
 rm -rf $RPM_BUILD_ROOT

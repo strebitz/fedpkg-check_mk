@@ -1,3 +1,4 @@
 1f3a470e64b4f9166498c22a0d9bca21  check_mk-1.2.0p4.tar.gz
 b85a2beb49a53b5ce27b31fe3073802d  check_mk.sudo
 5a79f89f5cfaedc56abafcc696120435  mk-livestatus.cfg.sample
+d99b6af5b4ebbe6d1ea69ef7c471a4fb  pnp4nagios_perfdata.cfg
