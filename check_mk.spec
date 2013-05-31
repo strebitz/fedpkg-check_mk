@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.0p4
-Release:        4%{dist}
+Release:        5%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -77,6 +77,51 @@ wrapper. Use it when doing fully redundant monitoring, where
 an agent is regularily polled by more than one monitoring
 server.
 
+%package agent-apache_status
+Group:     Applications/System
+Requires:  check_mk-agent, httpd, python
+Summary: apache_status-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-apache_status
+Fetches the server-status page from detected or configured apache
+processes to gather status information about this apache process.
+
+To make this agent plugin work you have to load the status_module
+into your apache process. It is also needed to enable the "server-status"
+handler below the URL "/server-status".
+
+By default this plugin tries to detect all locally running apache processes
+and to monitor them. If this is not good for your environment you might
+create an apache_status.conf file in MK_CONFDIR and populate the servers
+list to prevent executing the detection mechanism.
+
+It is also possible to override or extend the ssl_ports variable to make the
+check contact other ports than 443 with HTTPS requests.
+
+%package agent-dmi_sysinfo
+Group:     Applications/System
+Requires:  check_mk-agent, dmidecode, python
+Summary: dmi_sysinfo-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-dmi_sysinfo
+The dmi_sysinfo (Desktop Management Interface) plugin for the check_mk agent allows you to monitor
+dmi system information on Linux.
+
+%package agent-dmraid
+Group:     Applications/System
+Requires:  check_mk-agent, dmraid, python
+Summary: dmraid-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-dmraid
+The dmraid (Device-mapper RAID tool) plugin for the check_mk agent allows you to monitor
+dmraid information on Linux.
+
 %package agent-logwatch
 Group:     Applications/System
 Requires:  check_mk-agent, python
@@ -91,6 +136,28 @@ specify patters for log messages that should raise a warning or
 critical state. For each logfile the current position is remembered.
 This way only new messages are being sent.
 
+%package agent-mysql
+Group:     Applications/System
+Requires:  check_mk-agent, mysql, python
+Summary: mysql-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-mysql
+The mk_mysql plugin for the check_mk agent allows you to monitor
+mysql information.
+ 
+%package agent-nfsexports
+Group:     Applications/System
+Requires:  check_mk-agent, python
+Summary: nfsexports-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-nfsexports
+The nfsexports plugin for the check_mk agent allows you to monitor
+NFS exports information.
+ 
 %package agent-oracle
 Group:     Applications/System
 Requires:  check_mk-agent
@@ -102,6 +169,28 @@ BuildArch: noarch
 The ORACLE plugin for the check_mk agent allows you to monitor
 several aspects of ORACLE databases. You need to adapt the
 script %{_sysconfdir}/check_mk/sqlplus.sh to your needs.
+
+%package agent-postgresql
+Group:     Applications/System
+Requires:  check_mk-agent, postgresql, python
+Summary: postgresql-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-postgresql
+The mk_postgres plugin for the check_mk agent allows you to monitor
+postgres information.
+
+%package agent-smart
+Group:     Applications/System
+Requires:  check_mk-agent, python, smartmontools
+Summary: smart-Plugin for check_mk agent
+AutoReq:   off
+AutoProv:  off
+BuildArch: noarch
+%description agent-smart
+The smart plugin for the check_mk agent allows you to monitor
+SMART capable hard disks.
 
 %package web
 Group:     Applications/System
@@ -198,6 +287,15 @@ ln -s /usr/share/check_mk_agent/plugins/mk_oracle $R%{_libdir}/check_mk_agent/pl
 install -m 0755 $R%{_datadir}/check_mk/agents/logwatch.cfg $R%{_sysconfdir}/check_mk
 install -m 0644 $R%{_datadir}/check_mk/agents/sqlplus.sh   $R%{_sysconfdir}/check_mk
 
+# install some more agent plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/apache_status $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/dmi_sysinfo $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/dmraid $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_mysql $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_postgres $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/nfsexports $R%{_datadir}/check_mk_agent/plugins
+install -m 0755 $R%{_datadir}/check_mk/agents/plugins/smart $R%{_datadir}/check_mk_agent/plugins
+
 # install mk-livestatus.cfg.sample for nagios
 install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios
 
@@ -269,15 +367,36 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/check_mk_agent/plugins
 %dir %{_sysconfdir}/check_mk
 
+%files agent-apache_status
+%{_datadir}/check_mk_agent/plugins/apache_status
+
+%files agent-dmi_sysinfo
+%{_datadir}/check_mk_agent/plugins/dmi_sysinfo
+
+%files agent-dmraid
+%{_datadir}/check_mk_agent/plugins/dmraid
+
 %files agent-logwatch
 %{_libdir}/check_mk_agent/plugins/mk_logwatch
 %{_datadir}/check_mk_agent/plugins/mk_logwatch
 %config(noreplace) %{_sysconfdir}/check_mk/logwatch.cfg
 
+%files agent-mysql
+%{_datadir}/check_mk_agent/plugins/mk_mysql
+
+%files agent-nfsexports
+%{_datadir}/check_mk_agent/plugins/nfsexports
+
 %files agent-oracle
 %{_libdir}/check_mk_agent/plugins/mk_oracle
 %{_datadir}/check_mk_agent/plugins/mk_oracle
 %config(noreplace) %{_sysconfdir}/check_mk/sqlplus.sh
+
+%files agent-postgresql
+%{_datadir}/check_mk_agent/plugins/mk_postgres
+
+%files agent-smart
+%{_datadir}/check_mk_agent/plugins/smart
 
 %files web
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d/wato
