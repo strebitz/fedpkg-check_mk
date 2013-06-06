@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.0p4
-Release:        5%{dist}
+Release:        6%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -36,6 +36,7 @@ Source:         http://archive.mathias-kettner.de/check_mk/check_mk-%{version}.t
 Source1:        check_mk.sudo
 Source2:        mk-livestatus.cfg
 Source3:        pnp4nagios_perfdata.cfg
+Source4:        livestatus.xinetd
 Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
 Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
@@ -296,11 +297,14 @@ install -m 0755 $R%{_datadir}/check_mk/agents/plugins/mk_postgres $R%{_datadir}/
 install -m 0755 $R%{_datadir}/check_mk/agents/plugins/nfsexports $R%{_datadir}/check_mk_agent/plugins
 install -m 0755 $R%{_datadir}/check_mk/agents/plugins/smart $R%{_datadir}/check_mk_agent/plugins
 
-# install mk-livestatus.cfg for nagios
+# install livestatus configuration for nagios and xinetd service
 install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios
+install -m 0644 %{SOURCE4} $R%{_sysconfdir}/xinetd.d/livestatus
 
 # install check_mk sudoers file and config required for WATO
+touch $R%{_sysconfdir}/check_mk/conf.d/distributed_wato.mk
 mkdir -p $R%{_sysconfdir}/check_mk/conf.d/wato
+touch $R%{_sysconfdir}/check_mk/multisite.d/sites.mk
 mkdir -p $R%{_sysconfdir}/check_mk/multisite.d/wato
 mkdir -p $R%{_sysconfdir}/sudoers.d
 mkdir -p $R%{_sharedstatedir}/check_mk/wato
@@ -323,6 +327,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/nagios/*
 %config(noreplace) %{_sysconfdir}/nagios/conf.d/*
 %config(noreplace) %{_sysconfdir}/sudoers.d/check_mk
+%config(noreplace) %{_sysconfdir}/xinetd.d/livestatus
 %{_bindir}/check_mk
 %{_bindir}/cmk
 %{_bindir}/mkp
@@ -399,7 +404,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/check_mk_agent/plugins/smart
 
 %files web
+%attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d/distributed_wato.mk
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d/wato
+%attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d/sites.mk
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d/wato
 %{_datadir}/check_mk/web
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
