@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.0p4
-Release:        6%{dist}
+Release:        6.1%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -302,11 +302,10 @@ install -m 0644 %{SOURCE2} $R%{_sysconfdir}/nagios
 install -m 0644 %{SOURCE4} $R%{_sysconfdir}/xinetd.d/livestatus
 
 # install check_mk sudoers file and config required for WATO
-touch $R%{_sysconfdir}/check_mk/conf.d/distributed_wato.mk
 mkdir -p $R%{_sysconfdir}/check_mk/conf.d/wato
-touch $R%{_sysconfdir}/check_mk/multisite.d/sites.mk
 mkdir -p $R%{_sysconfdir}/check_mk/multisite.d/wato
 mkdir -p $R%{_sysconfdir}/sudoers.d
+mkdir -p $R%{_sharedstatedir}/check_mk/tmp
 mkdir -p $R%{_sharedstatedir}/check_mk/wato
 install -m 0440 %{SOURCE1} $R%{_sysconfdir}/sudoers.d/check_mk
 
@@ -404,11 +403,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/check_mk_agent/plugins/smart
 
 %files web
-%attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d/distributed_wato.mk
+%dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d/wato
-%attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d/sites.mk
+%dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d/wato
 %{_datadir}/check_mk/web
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
+%dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/tmp
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/wato
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/web
