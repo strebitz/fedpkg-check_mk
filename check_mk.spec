@@ -26,8 +26,8 @@
 
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
-Version:        1.2.0p4
-Release:        6.1%{dist}
+Version:        1.2.2p2
+Release:        1%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -40,6 +40,7 @@ Source4:        livestatus.xinetd
 Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
 Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
+Patch3:         setup-script.patch
 AutoReq:        off
 AutoProv:       off
 ExclusiveArch:  i386, x86_64
@@ -213,6 +214,9 @@ sed -i -e 's:$libdir:\%{_libdir}:' %{SOURCE2}
 # fix sudo command for check_mk automation
 sed -i 's/$(id -un)/root/' ./setup.sh
 
+# patch setup script
+patch -p3 ./setup.sh < %{PATCH3}
+
 %install
 R=$RPM_BUILD_ROOT
 rm -rf $R
@@ -222,6 +226,7 @@ export confdir="%{_sysconfdir}/check_mk"
 export sharedir="%{_datadir}/check_mk"
 export checksdir="%{_datadir}/check_mk/checks"
 export modulesdir="%{_datadir}/check_mk/modules"
+export notificationsdir="%{_datadir}/check_mk/notifications"
 export web_dir="%{_datadir}/check_mk/web"
 export localedir="%{_datadir}/check_mk/locale"
 export docdir="%{_datadir}/doc/check_mk"
@@ -324,7 +329,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/check_mk/multisite.mk
 %{_sysconfdir}/check_mk/conf.d/README
 %config(noreplace) %{_sysconfdir}/nagios/*
-%config(noreplace) %{_sysconfdir}/nagios/conf.d/*
 %config(noreplace) %{_sysconfdir}/sudoers.d/check_mk
 %config(noreplace) %{_sysconfdir}/xinetd.d/livestatus
 %{_bindir}/check_mk
@@ -334,6 +338,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/check_mk/agents
 %{_datadir}/check_mk/checks
 %{_datadir}/check_mk/modules
+%{_datadir}/check_mk/notifications
 %{_datadir}/check_mk/pnp-templates/*
 %{_datadir}/check_mk/check_mk_templates.cfg
 %{_datadir}/doc/check_mk
@@ -412,3 +417,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/tmp
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/wato
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/web
+
+%post
+chown apache:apache %{_sysconfdir}/nagios/passwd

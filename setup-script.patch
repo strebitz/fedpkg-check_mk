@@ -1,0 +1,17 @@
+diff --git a/scripts/setup.sh b/scripts/setup.sh
+index aafa7ff..911b47b 100755
+--- a/scripts/setup.sh
++++ b/scripts/setup.sh
+@@ -1005,10 +1005,8 @@ EOF
+            # make htpasswd writable by apache, since we need this for
+            # WATO. Also create an empty and Apache-writable auth.serials
+            serials_file=${htpasswd_file%/*}/auth.serials &&
+-           touch "$serials_file" &&
+-           chown $wwwuser "$serials_file" &&
+-           chown $wwwuser "$htpasswd_file" &&
+-	   create_sudo_configuration &&
++           touch "$DESTDIR$serials_file" &&
++           chown $wwwuser "$DESTDIR$serials_file" &&
+            if [ "$enable_mkeventd" = yes ]
+            then
+ 	       if [ -z "$YES" ] ; then echo -n "(Compiling Event Console binaries..." ; fi

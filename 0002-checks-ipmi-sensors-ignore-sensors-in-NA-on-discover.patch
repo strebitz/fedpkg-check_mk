@@ -48,8 +48,8 @@ index 2e154ef..f905268 100644
  # 3680 Fan_FAN_PSU2 0.00_RPM_(2760.00/NA) [OK]
  
  def inventory_freeipmi(info):
--    return [ (line[1], "", None) for line in info if line[-1] != '[Unknown]' ]
-+    return [ (line[1], "", None) for line in info if line[-1] != '[Unknown]' and line[-1] != '[NA]' and line[-1] != '[transition_to_Running]' ]
+-    return [ (line[1], "", None) for line in info if line[-1] not in ( '[Unknown]', '[NA]' ) ]
++    return [ (line[1], "", None) for line in info if line[-1] not in ( '[Unknown]', '[NA]' '[transition_to_Running]' ) ]
  
  def check_freeipmi(item, _no_params, info):
      for line in info:
