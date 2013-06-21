@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p2
-Release:        1%{dist}
+Release:        1.1%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -194,6 +194,17 @@ BuildArch: noarch
 The smart plugin for the check_mk agent allows you to monitor
 SMART capable hard disks.
 
+%package livestatus
+Group:     Applications/System
+Requires:  check_mk
+Summary: Check_mk livestatus
+AutoReq:   off
+AutoProv:  off
+%description livestatus
+Just as NDO, Livestatus make use of the Nagios Event Broker API and loads a binary module into your Nagios process. But other then NDO, Livestatus does not actively write out data. Instead, it opens a socket by which data can be retrieved on demand.
+
+The socket allows you to send a request for hosts, services or other pieces of data and get an immediate answer. The data is directly read from Nagios' internal data structures. Livestatus does not create its own copy of that data. 
+
 %package web
 Group:     Applications/System
 Requires:  python, mod_python
@@ -328,9 +339,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/check_mk/main.mk
 %config(noreplace) %{_sysconfdir}/check_mk/multisite.mk
 %{_sysconfdir}/check_mk/conf.d/README
-%config(noreplace) %{_sysconfdir}/nagios/*
-%config(noreplace) %{_sysconfdir}/sudoers.d/check_mk
-%config(noreplace) %{_sysconfdir}/xinetd.d/livestatus
+%config(noreplace) %{_sysconfdir}/nagios/conf.d/*
 %{_bindir}/check_mk
 %{_bindir}/cmk
 %{_bindir}/mkp
@@ -351,11 +360,14 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sharedstatedir}/check_mk/packages
 %{_sharedstatedir}/check_mk/packages/check_mk
 
-# Spaeter Subpaket draus machen
+
+%files livestatus
 %{_bindir}/unixcat
 %{_libdir}/check_mk/livestatus.o
 %{_libdir}/check_mk/livecheck
 %dir %attr(-,nagios,nagios) %{_localstatedir}/spool/nagios/socket
+%config(noreplace) %{_sysconfdir}/nagios/mk-livestatus.cfg
+%config(noreplace) %{_sysconfdir}/xinetd.d/livestatus
 
 
 %files agent
@@ -412,6 +424,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d/wato
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/multisite.d/wato
+%config(noreplace) %attr(-,apache,nagios) %{_sysconfdir}/nagios/auth.serials
+%config(noreplace) %{_sysconfdir}/sudoers.d/check_mk
 %{_datadir}/check_mk/web
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/tmp

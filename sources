@@ -1,5 +1,5 @@
 caa0f7662b4d170b2b6db2516bd41a89  check_mk-1.2.2p2.tar.gz
 b85a2beb49a53b5ce27b31fe3073802d  check_mk.sudo
-5a79f89f5cfaedc56abafcc696120435  mk-livestatus.cfg
+33e127a5fd496cc56cbb30292b5c369a  mk-livestatus.cfg
 d99b6af5b4ebbe6d1ea69ef7c471a4fb  pnp4nagios_perfdata.cfg
 6e5cc4a2dfb4d3e2cc9533b4a3f9244c  setup-script.patch
