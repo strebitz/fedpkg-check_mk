@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p2
-Release:        1.1%{dist}
+Release:        1.2%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
