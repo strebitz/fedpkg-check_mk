@@ -26,8 +26,8 @@
 
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
-Version:        1.2.2p2
-Release:        1.2%{dist}
+Version:        1.2.2p3
+Release:        1%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -355,6 +355,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/counters
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/cache
 %dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/logwatch
+%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/notify
 %dir %{_sharedstatedir}/check_mk/autochecks
 %dir %{_sharedstatedir}/check_mk/precompiled
 %dir %{_sharedstatedir}/check_mk/packages
@@ -378,6 +379,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/check_mk_agent/local
 %dir %{_datadir}/check_mk_agent/plugins
 
+
 %files caching-agent
 %config(noreplace) %{_sysconfdir}/xinetd.d/check_mk_caching
 %{_bindir}/check_mk_agent
@@ -388,36 +390,46 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/check_mk_agent/plugins
 %dir %{_sysconfdir}/check_mk
 
+
 %files agent-apache_status
 %{_datadir}/check_mk_agent/plugins/apache_status
+
 
 %files agent-dmi_sysinfo
 %{_datadir}/check_mk_agent/plugins/dmi_sysinfo
 
+
 %files agent-dmraid
 %{_datadir}/check_mk_agent/plugins/dmraid
+
 
 %files agent-logwatch
 %{_libdir}/check_mk_agent/plugins/mk_logwatch
 %{_datadir}/check_mk_agent/plugins/mk_logwatch
 %config(noreplace) %{_sysconfdir}/check_mk/logwatch.cfg
 
+
 %files agent-mysql
 %{_datadir}/check_mk_agent/plugins/mk_mysql
 
+
 %files agent-nfsexports
 %{_datadir}/check_mk_agent/plugins/nfsexports
+
 
 %files agent-oracle
 %{_libdir}/check_mk_agent/plugins/mk_oracle
 %{_datadir}/check_mk_agent/plugins/mk_oracle
 %config(noreplace) %{_sysconfdir}/check_mk/sqlplus.sh
 
+
 %files agent-postgresql
 %{_datadir}/check_mk_agent/plugins/mk_postgres
 
+
 %files agent-smart
 %{_datadir}/check_mk_agent/plugins/smart
+
 
 %files web
 %dir %attr(-,apache,nagios) %{_sysconfdir}/check_mk/conf.d
@@ -431,6 +443,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/tmp
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/wato
 %dir %attr(-,apache,nagios) %{_sharedstatedir}/check_mk/web
+
 
 %post
 chown apache:apache %{_sysconfdir}/nagios/passwd
