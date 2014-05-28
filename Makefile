@@ -1,10 +1,4 @@
-.PHONY: sources
-
-NAME = $(shell grep 'Name:' check_mk.spec | cut -d:  -f2 |  sed -e 's/^[ \t]*//')
-VERSION = $(shell grep 'Version:' check_mk.spec | cut -d:  -f2 |  sed -e 's/^[ \t]*//')
-
-clean:
-	rm -f $(NAME)-$(VERSION).tar.gz
+include ../common/Makefile
 
 sources:
 	wget --timestamping http://archive.mathias-kettner.de/check_mk/$(NAME)-$(VERSION).tar.gz || \
