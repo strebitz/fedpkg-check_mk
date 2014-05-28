@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p3
-Release:        1%{dist}
+Release:        2%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -352,10 +352,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/check_mk/check_mk_templates.cfg
 %{_datadir}/doc/check_mk
 %dir %{_sharedstatedir}/check_mk
-%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/counters
-%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/cache
-%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/logwatch
-%dir %attr(-,nagios,root) %{_sharedstatedir}/check_mk/notify
+%dir %attr(-,nagios,nagios) %{_sharedstatedir}/check_mk/counters
+%dir %attr(-,nagios,nagios) %{_sharedstatedir}/check_mk/cache
+%dir %attr(-,nagios,nagios) %{_sharedstatedir}/check_mk/logwatch
+%dir %attr(-,nagios,nagios) %{_sharedstatedir}/check_mk/notify
 %dir %{_sharedstatedir}/check_mk/autochecks
 %dir %{_sharedstatedir}/check_mk/precompiled
 %dir %{_sharedstatedir}/check_mk/packages
