@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p3
-Release:        3%{dist}
+Release:        4%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -451,5 +451,5 @@ chown apache:apache %{_sysconfdir}/nagios/passwd
 
 ### changelog ###
 %changelog
-* Fir May 30 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-3
+* Fri May 30 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-4
 - set 'setgid' flag on dir %{_sysconfdir}/check_mk/conf.d/wato
