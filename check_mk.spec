@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p3
-Release:        4%{dist}
+Release:        5%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -41,6 +41,7 @@ Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
 Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
 Patch3:         setup-script.patch
+Patch4:         check_mk_agent.linux.ntpq-patch
 AutoReq:        off
 AutoProv:       off
 ExclusiveArch:  i386, x86_64
@@ -273,13 +274,16 @@ rm -vf $R%{_sysconfdir}/check_mk/*.mk-*
 
 # patches must be apllied here - source tarball contains sub tarballs which are extraced during setup
 # patch check_mk_agent.linux: ipmi sensors: also check Power_Supply
-patch -p3 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %PATCH0
+patch -p3 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %{PATCH0}
+
+# patch check_mk_agent.linux: disable reverse DNS resolve for ntpq requests which fail too often
+patch -p3 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %{PATCH4} 
 
 # checks: ipmi sensors: skip sensors in NA Unknown state
-patch -p3 $R%{_datadir}/check_mk/checks/ipmi_sensors < %PATCH1
+patch -p3 $R%{_datadir}/check_mk/checks/ipmi_sensors < %{PATCH1}
 
 # checks: ipmi sensors: ignore sensors in NA or in transition_to_Running on discover
-patch -p3 $R%{_datadir}/check_mk/checks/ipmi_sensors < %PATCH2
+patch -p3 $R%{_datadir}/check_mk/checks/ipmi_sensors < %{PATCH2}
 
 # install agent
 mkdir -p $R%{_sysconfdir}/xinetd.d
@@ -451,5 +455,8 @@ chown apache:apache %{_sysconfdir}/nagios/passwd
 
 ### changelog ###
 %changelog
+* Tue Jun 3 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-5
+- patch check_mk_agent.linux to disable reverse DNS lookups for ntpq requests which fail too often
+
 * Fri May 30 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-4
 - set 'setgid' flag on dir %{_sysconfdir}/check_mk/conf.d/wato
