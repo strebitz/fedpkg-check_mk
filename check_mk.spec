@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p3
-Release:        5%{dist}
+Release:        5.1%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -455,6 +455,9 @@ chown apache:apache %{_sysconfdir}/nagios/passwd
 
 ### changelog ###
 %changelog
+* Fri Jun 4 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-5.1
+- add missing patch file to the git repository
+
 * Tue Jun 3 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-5
 - patch check_mk_agent.linux to disable reverse DNS lookups for ntpq requests which fail too often
 
