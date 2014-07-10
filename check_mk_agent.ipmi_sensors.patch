@@ -1,0 +1,30 @@
+@@ -268,7 +268,7 @@
+ # for the first run (where the cache is created). If ipmi-sensors runs into
+ # that timeout, it leaves and empty cache file. We skip this check forever
+ # if we find that empty cache file.
+-sdrcache=/var/cache/.freeipmi/sdr-cache/sdr-cache-$(hostname | cut -d. -f1).127.0.0.1
++sdrcache=/etc/check_mk/freeipmi_sensors.cache
+ if type ipmi-sensors >/dev/null && [ ! -e "$sdrcache" -o -s "$sdrcache" ]
+ then
+     echo '<<<ipmi_sensors>>>'
+@@ -295,16 +295,16 @@
+     # Aquire lock with flock in order to avoid multiple runs of ipmi-sensors
+     # in case of parallel or overlapping calls of the agent.
+     (
+-        flock -n 200 --wait 60
++        flock --wait 60 200
+         # At least with ipmi-sensoirs 0.7.16 this group is Power_Unit instead of "Power Unit"
+-        for class in Temperature Power_Unit Fan
++        for class in Temperature Power_Unit Power_Supply Fan
+         do
+-            $WAITMAX ipmi-sensors $IPMI_FORMAT --sdr-cache-directory /var/cache -g "$class" | sed -e 's/ /_/g' -e 's/:_\?/ /g' -e 's@ \([^(]*\)_(\([^)]*\))@ \2_\1@'
++            $WAITMAX ipmi-sensors $IPMI_FORMAT --sdr-cache-file $sdrcache -g "$class" | sed -e 's/ /_/g' -e 's/:_\?/ /g' -e 's@ \([^(]*\)_(\([^)]*\))@ \2_\1@'
+             # In case of a timeout immediately leave loop.
+         if [ $? = 255 ] ; then break ; fi
+             WAITMAX="waitmax 3"
+         done
+-    ) 200>>"$sdrcache"
++    ) 200>>"$sdrcache.lock"
+ fi
+ 
+ # State of LSI MegaRAID controller via MegaCli. You can download that tool from:

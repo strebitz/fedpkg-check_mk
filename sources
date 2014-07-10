@@ -1,7 +1,7 @@
-2f16d54fe68acc47cc6af946bc9049e2  0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
 a0009c846806c69b6a0e652b55b8d077  0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 28d942a7a36bf56113887f2594bd348c  0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
 55e56eeb27c0bab0ba15664ae67d0d20  check_mk-1.2.2p3.tar.gz
+27c8efb9ff1b9fe5f813a7a606d80f7d  check_mk_agent.ipmi_sensors.patch
 abca1243f00bb722542e0a0786427cf5  check_mk_agent.linux.ntpq-patch
 b85a2beb49a53b5ce27b31fe3073802d  check_mk.sudo
 4a1168ec716654f85d36d1a1b69cd277  livestatus.xinetd

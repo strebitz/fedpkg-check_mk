@@ -27,7 +27,7 @@
 Summary:        Nagios agent and check plugin by Mathias Kettner for efficient remote monitoring
 Name:           check_mk
 Version:        1.2.2p3
-Release:        5.1%{dist}
+Release:        5.2%{dist}
 License:        GPL
 Group:          Applications/System
 Requires:       nagios, nagios-plugins-icmp, pnp4nagios
@@ -37,7 +37,7 @@ Source1:        check_mk.sudo
 Source2:        mk-livestatus.cfg
 Source3:        pnp4nagios_perfdata.cfg
 Source4:        livestatus.xinetd
-Patch0:         0001-check_mk_agent-linux-ipmi-sensors-also-check-Power_S.patch
+Patch0:         check_mk_agent.ipmi_sensors.patch
 Patch1:         0001-checks-ipmi-sensors-skip-sensors-in-NA-Unknown-state.patch
 Patch2:         0002-checks-ipmi-sensors-ignore-sensors-in-NA-on-discover.patch
 Patch3:         setup-script.patch
@@ -273,8 +273,8 @@ DESTDIR=$R ./setup.sh --yes
 rm -vf $R%{_sysconfdir}/check_mk/*.mk-*
 
 # patches must be apllied here - source tarball contains sub tarballs which are extraced during setup
-# patch check_mk_agent.linux: ipmi sensors: also check Power_Supply
-patch -p3 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %{PATCH0}
+# patch check_mk_agent.linux: ipmi sensors: also check Power_Supply and fix SDR cache issues
+patch -p0 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %{PATCH0}
 
 # patch check_mk_agent.linux: disable reverse DNS resolve for ntpq requests which fail too often
 patch -p3 $R%{_datadir}/check_mk/agents/check_mk_agent.linux < %{PATCH4} 
