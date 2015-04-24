@@ -455,7 +455,7 @@ chown apache:apache %{_sysconfdir}/nagios/passwd
 
 ### changelog ###
 %changelog
-* Fri Jun 4 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-5.1
+* Wed Jun 4 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-5.1
 - add missing patch file to the git repository
 
 * Tue Jun 3 2014 Sebastian Trebitz <s.trebitz@mondialtelecom.be> - 1.2.2p3-5
